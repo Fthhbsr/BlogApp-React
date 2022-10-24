@@ -45,6 +45,28 @@ const BlogContextProvider = (props) => {
     }
   }
 
+  const setComments = async (slug, commendData) => {
+    const token = window.atob(sessionStorage.getItem('token'));
+    const commentUrl = base_url + `api/posts/${slug}/add_comment/`;
+    try {
+      const data = {
+        "content": commendData
+      };
+      var config = {
+        method: 'post',
+        url: commentUrl,
+        headers: {
+          'Authorization': `Token ${token}`,
+          'Content-Type': 'application/json'
+        },
+        data : data
+      };
+      await axios(config)
+    } catch (error) {
+      toastErrorNotify(error.message)
+    }
+  }
+
   let value = {
     blogs,
     setBlogs,
@@ -52,6 +74,7 @@ const BlogContextProvider = (props) => {
     getOneBlog,
     blogDetail,
     detailLoading,
+    setComments
   };
 
   return (

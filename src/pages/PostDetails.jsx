@@ -18,15 +18,29 @@ import { AuthContext } from "../contexts/AuthContext";
 import { BlogContext } from "../contexts/BlogContext";
 
 const PostDetails = () => {
-  const { getOneBlog, blogDetail, detailLoading } = useContext(BlogContext);
+  const [comment, setComment] = useState();
+  const { getOneBlog, blogDetail, detailLoading, setComments } =
+    useContext(BlogContext);
   const { currentUser } = useContext(AuthContext);
   const { state } = useLocation();
   console.log(blogDetail);
   console.log(currentUser);
 
+  const handleChange = (e) => {
+    e.preventDefault();
+    const value = e.target.value;
+    setComment(value);
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setComments(state.slug, comment);
+    setComment("");
+  };
+
   useEffect(() => {
-    getOneBlog(state.slug);   
-     // eslint-disable-next-line react-hooks/exhaustive-deps
+    getOneBlog(state.slug);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const base_url = "http://127.0.0.1:8000/";
@@ -121,6 +135,77 @@ const PostDetails = () => {
                 </Typography>
               </IconButton>
             </CardActions>
+
+            <Box>
+              <List
+                sx={{
+                  width: "100%",
+                  maxWidth: 360,
+                  bgcolor: "background.paper",
+                }}
+              >
+                {blogDetail.comment_post.map((comment) => (
+                  <>
+                    <ListItem alignItems="flex-start">
+                      {/* <ListItemAvatar>
+                        <Avatar alt={comment.user} />
+                      </ListItemAvatar> */}
+                      <ListItemText
+                        primary={comment.user}
+                        secondary={
+                          <React.Fragment>
+                            <Typography
+                              sx={{ display: "inline", mr: 2 }}
+                              component="span"
+                              variant="body2"
+                              color="text.primary"
+                            >
+                              {new Date(comment.time_stamp)
+                                .toUTCString()
+                                .slice(0, 16)}
+                            </Typography>
+                            <Typography
+                              component="p"
+                              variant="body2"
+                              color="text.secondary"
+                            >
+                              {comment.content}
+                            </Typography>
+                          </React.Fragment>
+                        }
+                      />
+                    </ListItem>
+                    <Divider variant="inset" component="li" />
+                  </>
+                ))}
+              </List>
+            </Box>
+
+            <form onSubmit={handleSubmit}>
+              <Box sx={{ display: "flex", flexDirection: "column", gap: 3.8 }}>
+                <TextField
+                  label="Comment"
+                  name="comment"
+                  id="comment"
+                  type="text"
+                  variant="outlined"
+                  multiline
+                  rows={6}
+                  maxRows={18}
+                  placeholder="Add a comment"
+                  value={comment}
+                  onChange={handleChange}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start"></InputAdornment>
+                    ),
+                  }}
+                />
+                <Button type="submit" variant="contained" size="large">
+                  Add Comment
+                </Button>
+              </Box>
+            </form>
           </Box>
         </Box>
       )}
