@@ -20,7 +20,7 @@ import { AuthContext } from '../contexts/AuthContext'
 
 const NavBar = () => {
   const navigate = useNavigate()
-  const { currentUser, logout } = useContext(AuthContext)
+  const { currentUser, logOut } = useContext(AuthContext)
   const settings = currentUser
     ? ['About', 'Profile', 'NewBlog', 'Logout']
     : ['About', 'Login', 'Register']
@@ -171,7 +171,7 @@ const NavBar = () => {
                 <MenuItem key={setting} onClick={handleCloseUserMenu}>
                   {setting === 'Logout' ? (
                     <Typography
-                      onClick={() => logout(navigate)}
+                      onClick={() => logOut(navigate)}
                       textAlign="center"
                     >
                       {setting}

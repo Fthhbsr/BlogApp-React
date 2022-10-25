@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import CardHeader from "@mui/material/CardHeader";
 import CardMedia from "@mui/material/CardMedia";
@@ -16,8 +16,19 @@ import Box from "@mui/material/Box";
 import axios from "axios";
 import { AuthContext } from "../contexts/AuthContext";
 import { BlogContext } from "../contexts/BlogContext";
+import {
+  Button,
+  Divider,
+  InputAdornment,
+  List,
+  ListItem,
+  ListItemText,
+  TextField,
+} from "@mui/material";
+import { toastErrorNotify } from "../helpers/toastNotify";
 
 const PostDetails = () => {
+  const [likeColor, setLikeColor] = useState(false);
   const [comment, setComment] = useState();
   const { getOneBlog, blogDetail, detailLoading, setComments } =
     useContext(BlogContext);
@@ -40,7 +51,7 @@ const PostDetails = () => {
 
   useEffect(() => {
     getOneBlog(state.slug);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    //  eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const base_url = "http://127.0.0.1:8000/";
@@ -59,10 +70,19 @@ const PostDetails = () => {
       headers: {
         Authorization: `Token ${token}`,
       },
+      data: data,
     };
-    const x = await axios(`${base_url}api/like/`, data, config);
-    console.log(x);
+    try {
+      const x = await axios(config);
+      getOneBlog(state.slug);
+      setLikeColor(!likeColor);
+      console.log(x);
+    } catch (error) {
+      console.log(error.message);
+      // toastErrorNotify(error.message);
+    }
   };
+
   const handleFavorite = () => {
     like();
   };
@@ -116,7 +136,7 @@ const PostDetails = () => {
               <IconButton aria-label="add to favorites">
                 <FavoriteIcon
                   onClick={() => handleFavorite()}
-                  sx={{ color: "red" }}
+                  sx={{ color: (blogDetail.like_post?.filter((like) => like.user_id === currentUser.id)[0]?.user_id) && "red" }}
                 />
                 <Typography sx={{ marginLeft: 1 }}>
                   {blogDetail.like_count}
@@ -157,8 +177,8 @@ const PostDetails = () => {
                             <Typography
                               sx={{ display: "inline", mr: 2 }}
                               component="span"
-                              variant="body2"
-                              color="text.primary"
+                              variant="body4"
+                              color="text.secondary"
                             >
                               {new Date(comment.time_stamp)
                                 .toUTCString()
@@ -166,8 +186,8 @@ const PostDetails = () => {
                             </Typography>
                             <Typography
                               component="p"
-                              variant="body2"
-                              color="text.secondary"
+                              variant="body1"
+                              color="text.primary"
                             >
                               {comment.content}
                             </Typography>

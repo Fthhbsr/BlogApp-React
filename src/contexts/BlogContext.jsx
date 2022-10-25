@@ -11,6 +11,8 @@ const BlogContextProvider = (props) => {
 
   const [blogs, setBlogs] = useState([]);
 
+  const [categories, setCategories] = useState([]);
+
   const base_url = "http://127.0.0.1:8000/";
 
   const getBlogs = async () => {
@@ -19,6 +21,7 @@ const BlogContextProvider = (props) => {
       const res = await axios.get(blogUrl);
       setBlogs(res.data.results);
       // toastSuccessNotify('Posts fetched successfully.')
+      
       return res;
     } catch (error) {
       toastErrorNotify(error.message);
@@ -62,6 +65,22 @@ const BlogContextProvider = (props) => {
         data : data
       };
       await axios(config)
+      getOneBlog(slug)
+    } catch (error) {
+      toastErrorNotify(error.message)
+    }
+  }
+
+  async function getCategory() {
+
+    try {
+      var config = {
+        method: 'get',
+        url: `${base_url}api/category/`,
+      };
+      const result = await axios(config);
+      console.log(result.data);
+      setCategories(result.data);
     } catch (error) {
       toastErrorNotify(error.message)
     }
@@ -74,7 +93,9 @@ const BlogContextProvider = (props) => {
     getOneBlog,
     blogDetail,
     detailLoading,
-    setComments
+    setComments,
+    getCategory,
+    categories,
   };
 
   return (

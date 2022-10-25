@@ -95,7 +95,7 @@ const AuthContextProvider = (props)=>{
         setCurrentUser(false)
         setMyKey(false)
         sessionStorage.clear()
-        toastSuccessNotify('User log out successfully.')
+        toastSuccessNotify('User logged out successfully.')
         navigate("/")
       }
     } catch (error) {
