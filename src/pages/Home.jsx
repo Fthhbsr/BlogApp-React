@@ -9,7 +9,7 @@ import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
 import { red } from "@mui/material/colors";
 import FavoriteIcon from "@mui/icons-material/Favorite";
-import { Badge, Grid } from "@mui/material";
+import { Badge, Grid, Box, Button, } from "@mui/material";
 import ChatOutlinedIcon from "@mui/icons-material/ChatOutlined";
 import RemoveRedEyeOutlinedIcon from "@mui/icons-material/RemoveRedEyeOutlined";
 import { useNavigate } from "react-router-dom";
@@ -21,12 +21,13 @@ const Home = () => {
   const { currentUser } = useContext(AuthContext);
   console.log(currentUser);
 
-  const { getBlogs, blogs, getCategory, categories } = useContext(BlogContext);
+  const { getBlogs, blogs, getCategory, page, setPage} = useContext(BlogContext);
 
   useEffect(() => {
     getBlogs();
     getCategory();
-  }, []);
+    //  eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page]);
   console.log(blogs);
 
   const navigate = useNavigate();
@@ -133,6 +134,11 @@ const Home = () => {
           </Grid>
         ))}
       </Grid>
+      <Box sx={{ display: "flex", justifyContent:"center", my:3}}>
+        <Button variant="contained" size="large" onClick={()=> setPage(page + 6)} >
+          View More...
+        </Button>
+      </Box>
     </div>
   );
 };

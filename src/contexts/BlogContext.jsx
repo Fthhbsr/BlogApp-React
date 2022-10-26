@@ -1,6 +1,6 @@
 import axios from "axios";
 import { createContext, useState } from "react";
-import { toastErrorNotify } from "../helpers/toastNotify";
+import { toastErrorNotify, toastSuccessNotify } from "../helpers/toastNotify";
 
 export const BlogContext = createContext();
 
@@ -13,10 +13,12 @@ const BlogContextProvider = (props) => {
 
   const [categories, setCategories] = useState([]);
 
+  const [page, setPage] = useState(6);
+
   const base_url = "http://127.0.0.1:8000/";
 
   const getBlogs = async () => {
-    const blogUrl = base_url + "api/posts/";
+    const blogUrl = base_url + `api/posts/?limit=${page}&offset=0`
     try {
       const res = await axios.get(blogUrl);
       setBlogs(res.data.results);
@@ -86,6 +88,33 @@ const BlogContextProvider = (props) => {
     }
   }
 
+  const createPost = async (data, navigate) => {
+
+    const token = window.atob(sessionStorage.getItem('token'));
+
+    var config = {
+      method: 'post',
+      url: `${base_url}api/posts/`,
+      headers: {
+        'Authorization': `Token ${token}`,
+        'Content-Type': 'application/json'
+      },
+      data: data
+    };
+
+    try {
+      console.log(data)
+      const res = await axios(config);
+      console.log(res)
+      if (res.status === 201) {
+        navigate("/")
+        toastSuccessNotify("New blog created successfully.")
+      }
+    } catch (error) {
+      toastErrorNotify(error.message);
+    } 
+  }
+
   let value = {
     blogs,
     setBlogs,
@@ -96,6 +125,9 @@ const BlogContextProvider = (props) => {
     setComments,
     getCategory,
     categories,
+    createPost,
+    page,
+    setPage,
   };
 
   return (
